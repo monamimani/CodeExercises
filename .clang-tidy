@@ -1,0 +1,103 @@
+---
+Checks: [
+        "*",
+        "-abseil-*",
+        "-altera-*",
+        "-android-*",
+        "-fuchsia-*",
+        "-google-*",
+        "-llvm*",
+        "-zircon-*",
+        "-cert-err58-cpp", # CERT C++ Coding Standard rule ERR58-CPP. Handle all exceptions thrown before main() begins executing.
+        "-modernize-use-trailing-return-type",
+        "-readability-else-after-return",
+        "-readability-static-accessed-through-instance",
+        "-readability-avoid-const-params-in-decls",
+        "-readability-uppercase-literal-suffix",
+        "-hicpp-uppercase-literal-suffix",
+        "-hicpp-signed-bitwise",
+        "-cppcoreguidelines-non-private-member-variables-in-classes",
+        "-misc-non-private-member-variables-in-classes",
+        #"-performance-enum-size",
+        "-misc-include-cleaner",
+        "-misc-use-internal-linkage"
+]
+
+ImplementationFileExtensions: ['c','cc','cpp','cxx', 'ixx', 'cppm']
+
+UseColor: true
+WarningsAsErrors: false
+FormatStyle: 'file'
+SystemHeaders: false
+
+ExtraArgs:
+#  - '-Wno-unknown-warning-option'
+#  - '-Wno-ignored-optimization-argument'
+#  - '-Wno-unused-command-line-argument'
+
+CheckOptions:
+  - key: readability-identifier-length.IgnoredVariableNames
+    value: 'x|y|z|_'
+  - key: readability-identifier-length.IgnoredParameterNames
+    value: 'x|y|z|_|p'
+
+  - key: readability-identifier-naming.NamespaceCase
+    value: CamelCase
+
+  - key: readability-identifier-naming.EnumCase
+    value: CamelCase
+  - key: readability-identifier-naming.EnumConstantCase
+    value: CamelCase
+
+  - key: readability-identifier-naming.GlobalConstantCase
+    value: camelBack
+  #- key: readability-identifier-naming.GlobalConstantPrefix
+  #  value: 'g_'
+
+  - key: readability-identifier-naming.TypeTemplateParameterCase
+    value: CamelCase
+  - key: readability-identifier-naming.TypeTemplateParameterSuffix
+    value: T
+  - key: readability-identifier-naming.TypeTemplateParameterIgnoredRegexp
+    value: ^(T|V|U|R|F|C|N|f|Type|Index|To|From|Other|LHS|RHS)$
+
+  - key: readability-identifier-naming.ConceptCase
+    value: CamelCase
+  - key: readability-identifier-naming.ConceptSuffix
+    value: C
+
+  - key: readability-identifier-naming.TypedefCase
+    value: CamelCase
+  - key: readability-identifier-naming.TypeAliasCase
+    value: CamelCase
+
+  - key: readability-identifier-naming.StructCase
+    value: CamelCase
+  - key: readability-identifier-naming.ClassCase
+    value: CamelCase
+  - key: readability-identifier-naming.ClassMethodCase
+    value: camelBack
+  - key: readability-identifier-naming.ClassMemberCase
+    value: camelBack
+  - key: readability-identifier-naming.ClassMemberPrefix
+    value: m_
+  - key: readability-identifier-naming.MemberCase
+    value: camelBack
+  - key: readability-identifier-naming.MemberPrefix
+    value: m_
+  - key: readability-identifier-naming.MethodCase
+    value: camelBack
+  - key: readability-identifier-naming.VirtualMethodCase
+    value: camelBack
+
+  - key: readability-identifier-naming.VariableCase
+    value: camelBack
+  - key: readability-identifier-naming.UnionCase
+    value: camelBack
+  - key: readability-identifier-naming.ParameterCase
+    value: camelBack
+  - key: readability-identifier-naming.FunctionCase
+    value: camelBack
+
+  - key: bugprone-exception-escape
+    value: 'main' # main function is allowed to throw exceptions, it will be caught by the runtime and alert the user.

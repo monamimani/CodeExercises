@@ -1,0 +1,81 @@
+{
+  "$schema": "https://cmake.org/cmake/help/v3.31/_downloads/3e2d73bff478d88a7de0de736ba5e361/schema.json",
+  "version": 10,
+  "include": [
+    "./BuildType.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "Common",
+      "hidden": true,
+      "binaryDir": "${sourceDir}/_Out/build/${presetName}",
+      "installDir": "${sourceDir}/_Out/install/${presetName}",
+      //"graphviz": "${sourceDir}/_Out/Graphviz/${presetName}/",
+      "warnings": {
+        "uninitialized": true,
+        "dev": false,
+        "deprecated": true
+      },
+      //"trace": {
+      //  "mode": true,
+      //  "format": "human"
+      //},
+      "cacheVariables": {
+        "CMAKE_VERBOSE_MAKEFILE": false
+      }
+    },
+    {
+      "name": "Ninja",
+      "hidden": true,
+      "generator": "Ninja",
+      "architecture": {
+        "value": "x64",
+        "strategy": "external"
+      },
+      "toolset": {
+        "value": "x64",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "Clang",
+      "hidden": true,
+      //"toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+       "environment": {
+        "CC": "/usr/bin/clang",
+        "CCX": "/usr/bin/clang++"
+      },
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
+      },
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "intelliSenseMode": "linux-clang-x64"
+        }
+      }
+    },
+    {
+      "name": "Linux",
+      "hidden": true,
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      },
+      "cacheVariables": {
+        "VCPKG_TARGET_TRIPLET": "x64-linux"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
+          "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
+        }
+      }
+    }
+  ]
+}

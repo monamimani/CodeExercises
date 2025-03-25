@@ -1,0 +1,33 @@
+{
+  "name": "CppDevContainer",
+  "image": "ghcr.io/monamimani-builds/cpp-devcontainer:latest",
+  "runArgs": [
+    "--name",
+    "codeexercises-devcontainer",
+    "--cap-add=SYS_PTRACE",
+    "--security-opt",
+    "seccomp=unconfined"
+  ],
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "cmake.configureOnOpen": false,
+        "editor.formatOnSave": false
+      },
+      "extensions": [
+        "github.vscode-github-actions",
+        "ms-azuretools.vscode-docker",
+        "ms-vscode.cmake-tools",
+        "ms-vscode.cpptools",
+        "llvm-vs-code-extensions.vscode-clangd",
+        "ms-vscode.cpptools-extension-pack",
+        "josetr.cmake-language-support-vscode"
+      ]
+    }
+  },
+  // "remoteUser": "vscode",
+  "features": {},
+  "postStartCommand": "chmod +x .devcontainer/postStartCommand.sh && .devcontainer/postStartCommand.sh",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=delegated",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
+}

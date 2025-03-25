@@ -1,0 +1,108 @@
+{
+  "$schema": "https://cmake.org/cmake/help/v3.31/_downloads/3e2d73bff478d88a7de0de736ba5e361/schema.json",
+  "version": 10,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 30,
+    "patch": 0
+  },
+  "include": [
+    "CMake/Presets/Configure.json",
+    "CMake/Presets/Build.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "FuzzTest",
+      "hidden": true,
+      "cacheVariables": {
+        "FUZZTEST_FUZZING_MODE": true
+      }
+    },
+    {
+      "name": "Linux-Clang-Ninja-Debug",
+      "inherits": [
+        "FuzzTest",
+        "Common",
+        "Linux",
+        "Clang",
+        "Ninja",
+        "Debug"
+      ]
+    },
+    {
+      "name": "Linux-Clang-Ninja-ReleaseWithDebugInfo",
+      "inherits": [
+        "FuzzTest",
+        "Common",
+        "Linux",
+        "Clang",
+        "Ninja",
+        "ReleaseWithDebugInfo"
+      ]
+    },
+    {
+      "name": "Linux-Clang-Ninja-Release",
+      "inherits": [
+        "FuzzTest",
+        "Common",
+        "Linux",
+        "Clang",
+        "Ninja",
+        "Release"
+      ]
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "Linux-Clang-Ninja-Debug",
+      "configurePreset": "Linux-Clang-Ninja-Debug",
+      "inherits": [
+        "Linux"
+      ]
+    },
+    {
+      "name": "Linux-Clang-Ninja-ReleaseWithDebugInfo",
+      "configurePreset": "Linux-Clang-Ninja-ReleaseWithDebugInfo",
+      "inherits": [
+        "Linux"
+      ]
+    },
+    {
+      "name": "Linux-Clang-Ninja-Release",
+      "configurePreset": "Linux-Clang-Ninja-Release",
+      "inherits": [
+        "Linux"
+      ]
+    }
+  ],
+  "testPresets": [],
+  "packagePresets": [],
+  "workflowPresets": [
+    {
+      "name": "Linux-Clang-Ninja-Debug",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Linux-Clang-Ninja-Debug"
+        },
+        {
+          "type": "build",
+          "name": "Linux-Clang-Ninja-Debug"
+        }
+      ]
+    },
+    {
+      "name": "Linux-Clang-Ninja-Release",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Linux-Clang-Ninja-Release"
+        },
+        {
+          "type": "build",
+          "name": "Linux-Clang-Ninja-Release"
+        }
+      ]
+    }
+  ]
+}

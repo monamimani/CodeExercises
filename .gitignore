@@ -1,0 +1,39 @@
+.vs
+.vscode
+.idea
+.venv
+.env
+
+# clangd cache
+.cache
+
+
+# Ignore generated credentials from google-github-actions/auth
+gha-creds-*.json
+
+bazel
+bazel-out
+
+out
+_Out
+_Bin
+_BinIntermediate
+_Tmp
+
+#Fuzztest output in the source folder ignoring it for now.
+/dist
+
+CPTCMakeBuild
+CompileCommands
+compile_commands.json
+
+ExternalsVcpkg
+ThirdpartyVcpkg
+packages
+
+CMakeUserPresets.json
+
+
+/vc140.pdb
+/Tools/GBenchmarkTool/code/gbench/__pycache__
+/Tools/UploadDataToMongoDb

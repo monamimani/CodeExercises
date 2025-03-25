@@ -1,0 +1,110 @@
+# Clang format style options
+# https://clang.llvm.org/docs/ClangFormatStyleOptions.html
+
+Language: Cpp
+Standard: Latest
+
+UseTab: Never
+IndentWidth: 2
+PPIndentWidth: 2
+ColumnLimit: 160
+MaxEmptyLinesToKeep: 1
+InsertNewlineAtEOF: True
+
+SortIncludes: CaseSensitive
+IncludeBlocks: Regroup
+IncludeCategories: 
+  - Regex:           ^<.*\.h>
+    Priority:        1
+  - Regex:           ^<.*
+    Priority:        2
+  - Regex:           .*
+    Priority:        3
+IncludeIsMainRegex: ([-_](test|unittest))?$
+
+PenaltyReturnTypeOnItsOwnLine: 99999
+
+FixNamespaceComments: True
+ReflowComments: True
+
+QualifierAlignment: Left
+PointerAlignment: Left
+ReferenceAlignment: Left
+IntegerLiteralSeparator:
+  Binary: 4
+  Decimal: 3
+  DecimalMinDigits: 5
+  Hex: 4
+
+AlignAfterOpenBracket: Align
+AlignOperands: AlignAfterOperator
+AlignEscapedNewlines: Left
+AlignArrayOfStructures: Right
+
+AllowShortCaseLabelsOnASingleLine: True
+AlignConsecutiveShortCaseStatements:
+  Enabled: true
+  AcrossEmptyLines: true
+  AcrossComments: true
+  AlignCaseColons: false
+
+AlignTrailingComments:
+  Kind: Always
+  OverEmptyLines: 1
+
+AllowShortBlocksOnASingleLine: Never
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: False
+AllowShortLambdasOnASingleLine: None
+AllowShortCompoundRequirementOnASingleLine: True
+
+BinPackArguments: False
+BinPackParameters: False
+PackConstructorInitializers : Never
+
+EmptyLineBeforeAccessModifier: LogicalBlock
+
+AlwaysBreakTemplateDeclarations: Yes
+BreakConstructorInitializers : BeforeComma
+BreakAfterAttributes: Leave
+BreakBeforeBinaryOperators :  NonAssignment
+BreakBeforeConceptDeclarations: Always
+
+RequiresClausePosition: OwnLine
+RequiresExpressionIndentation: OuterScope
+
+SeparateDefinitionBlocks: Always
+
+ConstructorInitializerIndentWidth: 0
+Cpp11BracedListStyle: True
+SpaceBeforeInheritanceColon : False
+SpaceAfterTemplateKeyword: False
+
+IndentRequiresClause: False
+IndentCaseLabels: True
+IndentPPDirectives: BeforeHash
+NamespaceIndentation: Inner
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: True
+  AfterClass: True
+  AfterControlStatement: Always
+  AfterEnum: True
+  AfterFunction: True
+  AfterNamespace: True
+  AfterStruct: True
+  AfterUnion: True
+  AfterExternBlock: True
+  BeforeCatch: True
+  BeforeElse: True
+  BeforeLambdaBody: False
+  BeforeWhile: True
+  IndentBraces: False
+  SplitEmptyFunction: False
+  SplitEmptyRecord: False
+  SplitEmptyNamespace: False
+
+
+AlignConsecutiveMacros: Consecutive
