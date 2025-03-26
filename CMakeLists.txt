@@ -22,7 +22,6 @@ endif()
 
 include(CheckCXXCompilerFlag)
 
-
 include(CMake/PreventInSourceBuilds.cmake)
 #include(CMake/ValidateVcpkgToolchain.cmake)
 include(CMake/GetCPM.cmake)
