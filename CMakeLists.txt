@@ -1,5 +1,15 @@
 cmake_minimum_required(VERSION 3.30 FATAL_ERROR)
 
+# Enables the Standard module support. This needs to be done
+# before selecting the languages.
+set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "0e5b6991-d74f-4b3d-a41c-cf096e0b2508")
+set(CMAKE_CXX_MODULE_STD ON)
+
+# Currently CMake requires extensions enabled when using import std.
+# https://gitlab.kitware.com/cmake/cmake/-/issues/25916
+# https://gitlab.kitware.com/cmake/cmake/-/issues/25539
+set(CMAKE_CXX_EXTENSIONS ON)
+
 include(CMakePrintHelpers)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
@@ -7,6 +17,7 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 
 if(NOT DEFINED CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 23)
+  set(CMAKE_CXX_STANDARD_REQUIRED YES)
 endif()
 
 include(CheckCXXCompilerFlag)
@@ -15,15 +26,6 @@ include(CheckCXXCompilerFlag)
 include(CMake/PreventInSourceBuilds.cmake)
 #include(CMake/ValidateVcpkgToolchain.cmake)
 include(CMake/GetCPM.cmake)
-
-CPMAddPackage(
-  NAME fuzztest
-  GITHUB_REPOSITORY google/fuzztest
-  GIT_TAG "2025-02-14"
-)
-
-include(CMake/FuzzTestFlagSetup.cmake)
-fuzztest_setup_fuzzing_flags()
 
 project(CodeExercises
   VERSION 0.0.1
@@ -40,21 +42,36 @@ if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   message(FATAL_ERROR, "Only Clang is supported. Current CMAKE_CXX_COMPILER_ID=${CMAKE_CXX_COMPILER_ID}")
 endif()
 
-# option(FUZZTEST_BUILD_TESTING "Building the tests." OFF)
+include(CMakeProjectOptions.cmake)
 option(FUZZTEST_FUZZING_MODE "Building the fuzztest in fuzzing mode." OFF)
-# set(FUZZTEST_COMPATIBILITY_MODE "" CACHE STRING "Compatibility mode. Available options: <empty>, libfuzzer")
+set(FUZZTEST_COMPATIBILITY_MODE "" CACHE STRING "Compatibility mode. Available options: <empty>, libfuzzer")
 
-# include(CMakeProjectOptions.cmake)
+CPMAddPackage(
+  NAME fuzztest
+  GITHUB_REPOSITORY google/fuzztest
+  GIT_TAG "2025-02-14"
+)
+
+CPMAddPackage(
+  NAME benchmark
+  GITHUB_REPOSITORY google/benchmark
+  GIT_TAG "v1.9.2"
+  OPTIONS
+    "BENCHMARK_ENABLE_TESTING Off"
+    "BENCHMARK_USE_LIBCXX ON"
+)
+
+include(CMake/FuzzTestFlagSetup.cmake)
+fuzztest_setup_fuzzing_flags()
 
 if(fuzztest_ADDED)
   enable_testing()
 endif()
 
-
 add_library(CodeExercises_sanitizers INTERFACE)
 add_library(CodeExercises::Sanitizers ALIAS CodeExercises_sanitizers)
-#target_compile_options(CodeExercises_sanitizers INTERFACE "-fsanitize=address,leak")
-#target_link_options(CodeExercises_sanitizers INTERFACE "-fsanitize=address,leak")
+target_compile_options(CodeExercises_sanitizers INTERFACE "-fsanitize=address")
+target_link_options(CodeExercises_sanitizers INTERFACE "-fsanitize=address")
 
 
 set(CLANG_WARNINGS

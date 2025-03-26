@@ -38,7 +38,7 @@
       }
     },
     {
-      "name": "Clang",
+      "name": "Linux-Clang",
       "hidden": true,
       //"toolchainFile": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
        "environment": {
@@ -48,6 +48,7 @@
       "cacheVariables": {
         "CMAKE_C_COMPILER": "clang",
         "CMAKE_CXX_COMPILER": "clang++"
+        // "VCPKG_TARGET_TRIPLET": "x64-linux"
       },
       "condition": {
         "type": "equals",
@@ -56,23 +57,7 @@
       },
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
-          "intelliSenseMode": "linux-clang-x64"
-        }
-      }
-    },
-    {
-      "name": "Linux",
-      "hidden": true,
-      "condition": {
-        "type": "equals",
-        "lhs": "${hostSystemName}",
-        "rhs": "Linux"
-      },
-      "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET": "x64-linux"
-      },
-      "vendor": {
-        "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
+          "intelliSenseMode": "linux-clang-x64",
           "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
         }
       }

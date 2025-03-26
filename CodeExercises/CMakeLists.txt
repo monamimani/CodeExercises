@@ -28,9 +28,9 @@ target_link_libraries(${targetName}
   CodeExercises::Sanitizers
   CodeExercises::Warnings
   GTest::gtest
+  benchmark::benchmark
   fuzztest::init_fuzztest
   fuzztest::fuzztest
 )
 
-#link_fuzztest(${targetName})
-#gtest_discover_tests(${targetName})
+gtest_discover_tests(${targetName})

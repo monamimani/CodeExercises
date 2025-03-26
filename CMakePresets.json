@@ -23,8 +23,7 @@
       "inherits": [
         "FuzzTest",
         "Common",
-        "Linux",
-        "Clang",
+        "Linux-Clang",
         "Ninja",
         "Debug"
       ]
@@ -34,8 +33,7 @@
       "inherits": [
         "FuzzTest",
         "Common",
-        "Linux",
-        "Clang",
+        "Linux-Clang",
         "Ninja",
         "ReleaseWithDebugInfo"
       ]
@@ -45,8 +43,7 @@
       "inherits": [
         "FuzzTest",
         "Common",
-        "Linux",
-        "Clang",
+        "Linux-Clang",
         "Ninja",
         "Release"
       ]
