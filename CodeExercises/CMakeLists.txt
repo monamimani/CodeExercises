@@ -5,6 +5,7 @@ set(targetName ${targetNameBase}Tests)
 
 
 #add_subdirectory(TheAlgorithms)
+add_subdirectory(DataStructures)
 
 add_executable(${targetName})
 
@@ -28,8 +29,7 @@ target_link_libraries(${targetName}
   INTERFACE
   PUBLIC
   PRIVATE
-  #TheAlgorithms
-  #CodeExercises::FuzzTestSanitizers
+  CodeExercises::DataStructures
   CodeExercises::Warnings
   GTest::gtest
   benchmark::benchmark
