@@ -3,6 +3,9 @@ include_guard()
 get_filename_component(targetNameBase ${CMAKE_CURRENT_LIST_DIR} NAME)
 set(targetName ${targetNameBase}Tests)
 
+
+#add_subdirectory(TheAlgorithms)
+
 add_executable(${targetName})
 
 target_include_directories(${targetName}
@@ -25,7 +28,8 @@ target_link_libraries(${targetName}
   INTERFACE
   PUBLIC
   PRIVATE
-  CodeExercises::Sanitizers
+  #TheAlgorithms
+  #CodeExercises::FuzzTestSanitizers
   CodeExercises::Warnings
   GTest::gtest
   benchmark::benchmark
@@ -33,4 +37,4 @@ target_link_libraries(${targetName}
   fuzztest::fuzztest
 )
 
-gtest_discover_tests(${targetName})
+#gtest_discover_tests(${targetName})

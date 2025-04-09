@@ -60,6 +60,5 @@ int main(int argc, char** argv) {
   auto benchmarkResults = benchmark::RunSpecifiedBenchmarks();
   benchmark::Shutdown();
 
-  const int success = (benchmarkResults>0? 0 : 1) + (testsResults==0 ? 0 : 1);
-  return success;
+  return (testsResults==0) && (benchmarkResults>0)? 0 : 1;
 }

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.30 FATAL_ERROR)
 
 # Enables the Standard module support. This needs to be done
 # before selecting the languages.
-set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "0e5b6991-d74f-4b3d-a41c-cf096e0b2508")
+set(CMAKE_EXPERIMENTAL_CXX_IMPORT_STD "a9e1cf81-9932-4810-974b-6eccaf14e457")
 set(CMAKE_CXX_MODULE_STD ON)
 
 # Currently CMake requires extensions enabled when using import std.
@@ -49,7 +49,35 @@ CPMAddPackage(
   NAME fuzztest
   GITHUB_REPOSITORY google/fuzztest
   GIT_TAG "2025-02-14"
+  OPTIONS
+    "FUZZTEST_FUZZING_MODE ${FUZZTEST_FUZZING_MODE}"
+    "FUZZTEST_COMPATIBILITY_MODE ${FUZZTEST_COMPATIBILITY_MODE}"
 )
+get_target_property(fuzztest_include_dirs fuzztest_fuzztest INTERFACE_INCLUDE_DIRECTORIES)
+set_property(TARGET fuzztest_fuzztest APPEND PROPERTY INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${fuzztest_include_dirs})
+
+# add_library(CodeExercises_FuzzTestSanitizers INTERFACE)
+# add_library(CodeExercises::FuzzTestSanitizers ALIAS CodeExercises_FuzzTestSanitizers)
+# target_compile_options(CodeExercises_FuzzTestSanitizers
+#   INTERFACE
+#     -fsanitize=address
+#     -fsanitize-coverage=inline-8bit-counters
+#     -fsanitize-coverage=trace-cmp
+#     -DFUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
+#     -DADDRESS_SANITIZER
+#     -UNDEBUG
+# )
+# target_link_options(CodeExercises_FuzzTestSanitizers INTERFACE "-fsanitize=address")
+
+# target_link_libraries(fuzztest_init_fuzztest
+#   PRIVATE
+#   CodeExercises::FuzzTestSanitizers
+# )
+
+# target_link_libraries(fuzztest_fuzztest
+#   INTERFACE
+#   CodeExercises::FuzzTestSanitizers
+# )
 
 CPMAddPackage(
   NAME benchmark
@@ -59,18 +87,6 @@ CPMAddPackage(
     "BENCHMARK_ENABLE_TESTING Off"
     "BENCHMARK_USE_LIBCXX ON"
 )
-
-include(CMake/FuzzTestFlagSetup.cmake)
-fuzztest_setup_fuzzing_flags()
-
-if(fuzztest_ADDED)
-  enable_testing()
-endif()
-
-add_library(CodeExercises_sanitizers INTERFACE)
-add_library(CodeExercises::Sanitizers ALIAS CodeExercises_sanitizers)
-target_compile_options(CodeExercises_sanitizers INTERFACE "-fsanitize=address")
-target_link_options(CodeExercises_sanitizers INTERFACE "-fsanitize=address")
 
 
 set(CLANG_WARNINGS
@@ -95,6 +111,13 @@ set(PROJECT_WARNINGS_CXX ${CLANG_WARNINGS})
 add_library(CodeExercises_warnings INTERFACE)
 add_library(CodeExercises::Warnings ALIAS CodeExercises_warnings)
 target_compile_options(CodeExercises_warnings INTERFACE $<$<COMPILE_LANGUAGE:CXX>:${PROJECT_WARNINGS_CXX}>)
+
+include(CMake/FuzzTestFlagSetup.cmake)
+fuzztest_setup_fuzzing_flags()
+
+if(fuzztest_ADDED)
+  enable_testing()
+endif()
 
 add_subdirectory(CodeExercises)
 

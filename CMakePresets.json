@@ -89,6 +89,19 @@
       ]
     },
     {
+      "name": "Linux-Clang-Ninja-ReleaseWithDebugInfo",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "Linux-Clang-Ninja-ReleaseWithDebugInfo"
+        },
+        {
+          "type": "build",
+          "name": "Linux-Clang-Ninja-ReleaseWithDebugInfo"
+        }
+      ]
+    },
+    {
       "name": "Linux-Clang-Ninja-Release",
       "steps": [
         {
