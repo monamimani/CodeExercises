@@ -21,7 +21,7 @@ class Vector
     std::ranges::copy(init, m_data.get());
   }
 
-  Vector(const std::span<const T>& span)
+  Vector(std::span<const T> span)
   : m_size{span.size()}
   , m_capacity{m_size}
   , m_data{std::make_unique<T[]>(m_capacity)}
@@ -53,10 +53,28 @@ class Vector
     if(newCapacity > m_capacity)
     {
       auto newData = std::make_unique<T[]>(newCapacity);
-      std::ranges::copy(view(), newData.get());
+      copy_or_move(view(), std::span<T>{newData.get(), m_size});
       m_data = std::move(newData);
       m_capacity = newCapacity;
     }
+  }
+
+  void push_back(const T& value)
+  {
+    if (m_size == m_capacity)
+    {
+      reserve(m_capacity == 0 ? 1 : m_capacity * 2);
+    }
+    m_data[m_size++] = value;
+  }
+
+  void push_back(T&& value)
+  {
+    if (m_size == m_capacity)
+    {
+      reserve(m_capacity == 0 ? 1 : m_capacity * 2);
+    }
+    m_data[m_size++] = std::move(value);
   }
 
   template <typename Self>
@@ -64,18 +82,52 @@ class Vector
   {
     return std::forward<Self>(self).m_data.get();
   }
+
+  // template <typename Self>
+  // auto data(this Self&& self)
+  // {
+  //   return std::forward_like<Self>(self.m_data.get());
+  // }
+
+  // template <typename Self>
+  // auto operator[](this Self&& self, std::size_t index) -> std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>, const T&, T&>
+  // {
+  //   if (index < 0 || index >= std::forward<Self>(self).m_size || !std::forward<Self>(self).m_data)
+  //   {
+  //     throw std::out_of_range("Index out of range");
+  //   }
+  //   return std::forward<Self>(self).m_data[index];
+  // }
+
   template <typename Self>
-  auto operator[](this Self&& self, std::size_t index) -> std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>, const T&, T&>
+  auto&& operator[](this Self&& self, std::size_t index)
   {
     if (index < 0 || index >= std::forward<Self>(self).m_size || !std::forward<Self>(self).m_data)
     {
       throw std::out_of_range("Index out of range");
     }
-    return std::forward<Self>(self).m_data[index];
+    return std::forward_like<Self>(self.m_data[index]);
   }
 
 
   private:
+
+  void copy_or_move(std::span<T> src, std::span<T> dest)
+  {
+    if constexpr (std::is_nothrow_move_constructible_v<T>)
+    {
+      std::ranges::move(src, dest.begin());
+    }
+    else if constexpr(std::is_trivially_copyable_v<T>)
+    {
+      std::ranges::copy(src, dest.begin());
+    }
+    else
+    {
+      std::ranges::copy(src, dest.begin());
+    }
+  }
+
   std::size_t m_size = 0;
   std::size_t m_capacity = 0;
   std::unique_ptr<T[]> m_data;
@@ -133,8 +185,62 @@ TEST(DataStructures, VectorReserve) {
   EXPECT_EQ(vec[2z], 3);
 }
 
+TEST(DataStructures, VectorReserveCopyOnly) {
+  struct CopyOnly {
+    CopyOnly() = default;
+    CopyOnly(int& val) : m_val{val} {};
+    CopyOnly(int&& val) : m_val{val} {};
+    CopyOnly(const CopyOnly&) = default;
+    CopyOnly(CopyOnly&&) = delete;
+    CopyOnly& operator=(const CopyOnly&) = default;
+    CopyOnly& operator=(CopyOnly&&) = delete;
+
+    auto operator<=>(const CopyOnly&) const = default;
+
+    int m_val = 0;
+  };
+
+  CopyOnly init[] = {CopyOnly(1), CopyOnly(2), CopyOnly(3)};
+  auto vec = Vector<CopyOnly>{std::span{init}};
+  vec.reserve(6);
+  EXPECT_EQ(vec.size(), 3);
+  EXPECT_EQ(vec.capacity(), 6);
+  EXPECT_NE(vec.data(), nullptr);
+  EXPECT_EQ(vec[0z], init[0z]);
+  EXPECT_EQ(vec[1z], init[1z]);
+  EXPECT_EQ(vec[2z], init[2z]);
+}
+
+// TEST(DataStructures, VectorReserveMoveOnly) {
+//   struct MoveOnly {
+//     MoveOnly() = default;
+//     MoveOnly(int& val) : m_val{val} {};
+//     MoveOnly(int&& val) : m_val{val} {};
+//     MoveOnly(const MoveOnly&) = delete;
+//     MoveOnly(MoveOnly&&) = default;
+//     MoveOnly& operator=(const MoveOnly&) = delete;
+//     MoveOnly& operator=(MoveOnly&&) = default;
+
+//     auto operator<=>(const MoveOnly&) const = default;
+
+//     int m_val = 0;
+//   };
+
+//   MoveOnly init[] = {MoveOnly(1), MoveOnly(2), MoveOnly(3)};
+//   auto stdVec = std::vector<MoveOnly>{};
+//   stdVec.insert_range(stdVec.end(), std::span{init});
+//   auto vec = Vector<MoveOnly>{std::span{std::move(init)}};
+//   vec.reserve(6);
+//   EXPECT_EQ(vec.size(), 3);
+//   EXPECT_EQ(vec.capacity(), 6);
+//   EXPECT_NE(vec.data(), nullptr);
+//   EXPECT_EQ(vec[0z], init[0z]);
+//   EXPECT_EQ(vec[1z], init[1z]);
+//   EXPECT_EQ(vec[2z], init[2z]);
+//}
+
 void FuzzTestVectorSpan(const std::vector<int>& init) {
-  auto vec = Vector<int>{std::span{init}};
+  auto vec = Vector<int>{std::span{init.begin(), init.size()}};
   EXPECT_EQ(vec.size(), init.size());
   EXPECT_EQ(vec.capacity(), init.size());
   EXPECT_NE(vec.data(), nullptr);

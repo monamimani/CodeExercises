@@ -23,6 +23,9 @@
         "ms-vscode.cpptools-extension-pack",
         "josetr.cmake-language-support-vscode"
       ]
+    },
+    "jetbrains" : {
+      "backend" : "CLion"
     }
   },
   // "remoteUser": "vscode",
