@@ -18,8 +18,7 @@
  * and value of all subsets. Consider the only subsets whose total weight is
  * smaller than `W`. From all such subsets, pick the maximum value subset.
  *
- * @author [Anmol](https://github.com/Anmol3299)
- * @author [Pardeep](https://github.com/Pardeep009)
+ * @ref [Pardeep009/Coding-Questions](https://github.com/Pardeep009/Coding-Questions)
  */
 
 import std;
