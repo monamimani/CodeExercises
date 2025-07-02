@@ -4,7 +4,7 @@ get_filename_component(targetNameBase ${CMAKE_CURRENT_LIST_DIR} NAME)
 set(targetName ${targetNameBase}Tests)
 
 
-add_subdirectory(TheAlgorithms)
+#add_subdirectory(TheAlgorithms)
 add_subdirectory(DataStructures)
 
 add_executable(${targetName})
