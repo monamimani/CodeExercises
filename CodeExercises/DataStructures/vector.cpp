@@ -83,9 +83,9 @@ class Vector
   }
 
   template <typename Self>
-  auto data(this Self&& self) -> std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>, const T*, T*>
+  auto data(this Self&& self)
   {
-    return std::forward<Self>(self).m_data.get();
+    return std::forward_like<Self>(self.m_data.get());
   }
 
   // template <typename Self>
