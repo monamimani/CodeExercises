@@ -3,7 +3,7 @@
   "image": "ghcr.io/monamimani-builds/cpp-devcontainer:latest",
   "runArgs": [
     "--name",
-    "codeexercises-devcontainer",
+    "codeexercises-devcontainer-${devcontainerId}",
     "--cap-add=SYS_PTRACE",
     "--security-opt",
     "seccomp=unconfined"
@@ -21,7 +21,8 @@
         "ms-vscode.cpptools",
         "llvm-vs-code-extensions.vscode-clangd",
         "ms-vscode.cpptools-extension-pack",
-        "josetr.cmake-language-support-vscode"
+        "josetr.cmake-language-support-vscode",
+        "google.geminicodeassist"
       ]
     },
     "jetbrains" : {
