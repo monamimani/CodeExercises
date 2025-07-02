@@ -299,3 +299,24 @@ void FuzzTestVectorSpan(const std::vector<int>& init) {
   }
 }
 FUZZ_TEST(DataStructures, FuzzTestVectorSpan);
+
+void FuzzTestVectorPushBack(const std::vector<int>& init) {
+  auto vec = Vector<int>{};
+  for (const auto& val : init) {
+    vec.push_back(val);
+  }
+
+  EXPECT_EQ(vec.size(), init.size());
+  if (init.empty()) {
+    EXPECT_EQ(vec.capacity(), 0);
+    EXPECT_EQ(vec.data(), nullptr);
+  } else {
+    EXPECT_GE(vec.capacity(), vec.size());
+    EXPECT_NE(vec.data(), nullptr);
+  }
+
+  for (std::size_t i = 0; i < init.size(); ++i) {
+    EXPECT_EQ(vec[i], init[i]);
+  }
+}
+FUZZ_TEST(DataStructures, FuzzTestVectorPushBack);
