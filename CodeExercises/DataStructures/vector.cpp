@@ -16,17 +16,21 @@ class Vector
   Vector(const std::initializer_list<T>& init)
   : m_size{init.size()}
   , m_capacity{m_size}
-  , m_data{std::make_unique<T[]>(m_capacity)}
+  , m_data{m_capacity == 0 ? nullptr : std::make_unique<T[]>(m_capacity)}
   {
-    std::ranges::copy(init, m_data.get());
+    if (m_capacity > 0) {
+      std::ranges::copy(init, m_data.get());
+    }
   }
 
   Vector(std::span<const T> span)
   : m_size{span.size()}
   , m_capacity{m_size}
-  , m_data{std::make_unique<T[]>(m_capacity)}
+  , m_data{m_capacity == 0 ? nullptr : std::make_unique<T[]>(m_capacity)}
   {
-    std::ranges::copy(span, m_data.get());
+    if (m_capacity > 0) {
+      std::ranges::copy(span, m_data.get());
+    }
   }
 
   auto size() const
@@ -323,6 +327,15 @@ TEST(DataStructures, VectorReserveMoveOnly) {
   EXPECT_EQ(vec[2z].m_val, 3);
 }
 
+TEST(DataStructures, FuzzTestVectorSpanWithEmptyInput) {
+  FuzzTestVectorSpan({});
+}
+
+TEST(DataStructures, VectorReserveThrowsAtMaxSize) {
+  auto vec = Vector<int>{};
+  EXPECT_THROW(vec.reserve(std::numeric_limits<std::size_t>::max()), std::bad_alloc);
+}
+
 void FuzzTestVectorSpan(const std::vector<int>& init) {
   auto vec = Vector<int>{std::span{init.begin(), init.size()}};
   EXPECT_EQ(vec.size(), init.size());
@@ -381,4 +394,4 @@ void FuzzTestVectorReserve(const std::vector<int>& init, const std::size_t new_c
 }
 FUZZ_TEST(DataStructures, FuzzTestVectorReserve)
     .WithDomains(fuzztest::Arbitrary<std::vector<int>>(),
-                 fuzztest::Arbitrary<std::size_t>());
+                 fuzztest::InRange<std::size_t>(0, 100000));

@@ -72,7 +72,15 @@
       ]
     }
   ],
-  "testPresets": [],
+  "testPresets": [
+    {
+      "name": "Linux-Clang-Ninja-Debug",
+      "configurePreset": "Linux-Clang-Ninja-Debug",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ],
   "packagePresets": [],
   "workflowPresets": [
     {
