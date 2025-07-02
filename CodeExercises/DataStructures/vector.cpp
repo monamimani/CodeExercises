@@ -255,33 +255,73 @@ TEST(DataStructures, VectorPushBack) {
   EXPECT_EQ(vec[2], 3);
 }
 
-// TEST(DataStructures, VectorReserveMoveOnly) {
-//   struct MoveOnly {
-//     MoveOnly() = default;
-//     MoveOnly(int& val) : m_val{val} {};
-//     MoveOnly(int&& val) : m_val{val} {};
-//     MoveOnly(const MoveOnly&) = delete;
-//     MoveOnly(MoveOnly&&) = default;
-//     MoveOnly& operator=(const MoveOnly&) = delete;
-//     MoveOnly& operator=(MoveOnly&&) = default;
+TEST(DataStructures, VectorPushBackMoveOnly) {
+  struct MoveOnly {
+    MoveOnly() = default;
+    MoveOnly(int val) : m_val{val} {};
+    MoveOnly(const MoveOnly&) = delete;
+    MoveOnly(MoveOnly&&) = default;
+    MoveOnly& operator=(const MoveOnly&) = delete;
+    MoveOnly& operator=(MoveOnly&&) = default;
 
-//     auto operator<=>(const MoveOnly&) const = default;
+    auto operator<=>(const MoveOnly&) const = default;
 
-//     int m_val = 0;
-//   };
+    int m_val = 0;
+  };
 
-//   MoveOnly init[] = {MoveOnly(1), MoveOnly(2), MoveOnly(3)};
-//   auto stdVec = std::vector<MoveOnly>{};
-//   stdVec.insert_range(stdVec.end(), std::span{init});
-//   auto vec = Vector<MoveOnly>{std::span{std::move(init)}};
-//   vec.reserve(6);
-//   EXPECT_EQ(vec.size(), 3);
-//   EXPECT_EQ(vec.capacity(), 6);
-//   EXPECT_NE(vec.data(), nullptr);
-//   EXPECT_EQ(vec[0z], init[0z]);
-//   EXPECT_EQ(vec[1z], init[1z]);
-//   EXPECT_EQ(vec[2z], init[2z]);
-//}
+  auto vec = Vector<MoveOnly>{};
+  EXPECT_TRUE(vec.empty());
+
+  vec.push_back(MoveOnly(1));
+  EXPECT_EQ(vec.size(), 1);
+  EXPECT_EQ(vec.capacity(), 1);
+  EXPECT_EQ(vec[0].m_val, 1);
+
+  vec.push_back(MoveOnly(2));
+  EXPECT_EQ(vec.size(), 2);
+  EXPECT_EQ(vec.capacity(), 2);
+  EXPECT_EQ(vec[0].m_val, 1);
+  EXPECT_EQ(vec[1].m_val, 2);
+
+  vec.push_back(MoveOnly(3));
+  EXPECT_EQ(vec.size(), 3);
+  EXPECT_EQ(vec.capacity(), 4);
+  EXPECT_EQ(vec[0].m_val, 1);
+  EXPECT_EQ(vec[1].m_val, 2);
+  EXPECT_EQ(vec[2].m_val, 3);
+}
+
+TEST(DataStructures, VectorReserveMoveOnly) {
+  struct MoveOnly {
+    MoveOnly() = default;
+    MoveOnly(int val) : m_val{val} {};
+    MoveOnly(const MoveOnly&) = delete;
+    MoveOnly(MoveOnly&&) = default;
+    MoveOnly& operator=(const MoveOnly&) = delete;
+    MoveOnly& operator=(MoveOnly&&) = default;
+
+    auto operator<=>(const MoveOnly&) const = default;
+
+    int m_val = 0;
+  };
+
+  auto vec = Vector<MoveOnly>{};
+  vec.push_back(MoveOnly(1));
+  vec.push_back(MoveOnly(2));
+  vec.push_back(MoveOnly(3));
+
+  EXPECT_EQ(vec[0z].m_val, 1);
+  EXPECT_EQ(vec[1z].m_val, 2);
+  EXPECT_EQ(vec[2z].m_val, 3);
+
+  vec.reserve(6);
+  EXPECT_EQ(vec.size(), 3);
+  EXPECT_EQ(vec.capacity(), 6);
+  EXPECT_NE(vec.data(), nullptr);
+  EXPECT_EQ(vec[0z].m_val, 1);
+  EXPECT_EQ(vec[1z].m_val, 2);
+  EXPECT_EQ(vec[2z].m_val, 3);
+}
 
 void FuzzTestVectorSpan(const std::vector<int>& init) {
   auto vec = Vector<int>{std::span{init.begin(), init.size()}};
