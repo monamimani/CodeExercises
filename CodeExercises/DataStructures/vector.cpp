@@ -320,3 +320,25 @@ void FuzzTestVectorPushBack(const std::vector<int>& init) {
   }
 }
 FUZZ_TEST(DataStructures, FuzzTestVectorPushBack);
+
+void FuzzTestVectorReserve(const std::vector<int>& init, const std::size_t new_capacity) {
+  auto vec = Vector<int>{std::span{init.begin(), init.size()}};
+  const auto old_size = vec.size();
+  const auto old_capacity = vec.capacity();
+
+  vec.reserve(new_capacity);
+
+  EXPECT_EQ(vec.size(), old_size);
+  if (new_capacity > old_capacity) {
+    EXPECT_EQ(vec.capacity(), new_capacity);
+  } else {
+    EXPECT_EQ(vec.capacity(), old_capacity);
+  }
+
+  for (std::size_t i = 0; i < old_size; ++i) {
+    EXPECT_EQ(vec[i], init[i]);
+  }
+}
+FUZZ_TEST(DataStructures, FuzzTestVectorReserve)
+    .WithDomains(fuzztest::Arbitrary<std::vector<int>>(),
+                 fuzztest::Arbitrary<std::size_t>());
