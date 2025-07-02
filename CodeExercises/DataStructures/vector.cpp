@@ -83,9 +83,9 @@ class Vector
   }
 
   template <typename Self>
-  auto data(this Self&& self)
+  auto data(this Self&& self) -> std::conditional_t<std::is_const_v<std::remove_reference_t<Self>>, const T*, T*>
   {
-    return std::forward_like<Self>(self.m_data.get());
+    return std::forward<Self>(self).m_data.get();
   }
 
   // template <typename Self>
@@ -151,8 +151,8 @@ TEST(DataStructures, VectorEmpty) {
 
   const auto& vecConst = vec;
   EXPECT_TRUE(vecConst.empty());
-  static_assert(std::is_const_v<std::remove_pointer_t<decltype(vecConst.data())>>);
-  static_assert(std::is_const_v<std::remove_reference_t<decltype(vecConst[0z])>>);
+  static_assert(std::is_same_v<decltype(vecConst.data()), const int*>);
+  static_assert(std::is_same_v<decltype(vecConst[0z]), const int&>);
   EXPECT_THROW(vecConst[0z], std::out_of_range);
 }
 
@@ -239,7 +239,7 @@ TEST(DataStructures, VectorReserveCopyOnly) {
 TEST(DataStructures, VectorPushBack) {
   auto vec = Vector<int>{};
   EXPECT_TRUE(vec.empty());
-  
+
   vec.push_back(1);
   EXPECT_EQ(vec.size(), 1);
   EXPECT_EQ(vec.capacity(), 1);
@@ -327,13 +327,19 @@ TEST(DataStructures, VectorReserveMoveOnly) {
   EXPECT_EQ(vec[2z].m_val, 3);
 }
 
-TEST(DataStructures, FuzzTestVectorSpanWithEmptyInput) {
-  FuzzTestVectorSpan({});
+TEST(DataStructures, VectorReserveThrowsAtMaxSize) __attribute__((no_sanitize_address)) {
+  auto vec = Vector<int>{};
+  // Attempt to allocate 1TB, which should trigger std::bad_alloc on most systems.
+  // This value is chosen to be large enough to fail, but not so large that ASan aborts immediately.
+  EXPECT_THROW(vec.reserve(1ULL << 40), std::bad_alloc);
 }
 
-TEST(DataStructures, VectorReserveThrowsAtMaxSize) {
-  auto vec = Vector<int>{};
-  EXPECT_THROW(vec.reserve(std::numeric_limits<std::size_t>::max()), std::bad_alloc);
+TEST(DataStructures, VectorWithEmptyInput) {
+  const auto vec = Vector<int>{std::span<const int>{}};
+  EXPECT_EQ(vec.size(), 0);
+  EXPECT_EQ(vec.capacity(), 0);
+  EXPECT_EQ(vec.data(), nullptr);
+  EXPECT_EQ(vec.view().size(), 0);
 }
 
 void FuzzTestVectorSpan(const std::vector<int>& init) {

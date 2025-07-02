@@ -54,6 +54,17 @@ This project uses a CMake preset-based workflow. The build output will be locate
     ```
     *Executables will be in `_Out/build/Linux-Clang-Ninja-ReleaseWithDebugInfo`.*
 
+### Run Tests
+
+After building the project, you can run the tests by executing the test binary directly:
+
+```sh
+./_Out/build/Linux-Clang-Ninja-Debug/CodeExercises/CodeExercisesTests
+```
+
 ## Coding Style
 
 The project enforces a consistent code style using `.clang-format` and uses `.clang-tidy` for static analysis. Please ensure that any new code contributions are formatted according to these configurations.
+
+## Comments policy
+Only write high-value comments if at all. Avoid talking to the user through comments.
