@@ -138,6 +138,7 @@ class Vector
 TEST(DataStructures, VectorEmpty) {
   auto vec = Vector<int>{};
   EXPECT_EQ(vec.size(), 0);
+  EXPECT_TRUE(vec.empty());
   EXPECT_EQ(vec.capacity(), 0);
   EXPECT_EQ(vec.data(), nullptr);
   EXPECT_THROW(vec[0z], std::out_of_range);
@@ -145,6 +146,7 @@ TEST(DataStructures, VectorEmpty) {
   EXPECT_THROW(vec[1z], std::out_of_range);
 
   const auto& vecConst = vec;
+  EXPECT_TRUE(vecConst.empty());
   static_assert(std::is_const_v<std::remove_pointer_t<decltype(vecConst.data())>>);
   static_assert(std::is_const_v<std::remove_reference_t<decltype(vecConst[0z])>>);
   EXPECT_THROW(vecConst[0z], std::out_of_range);
@@ -153,6 +155,7 @@ TEST(DataStructures, VectorEmpty) {
 TEST(DataStructures, VectorInitializerList) {
   const auto vec = Vector<int>{1, 2, 3};
   EXPECT_EQ(vec.size(), 3);
+  EXPECT_FALSE(vec.empty());
   EXPECT_EQ(vec.capacity(), 3);
   EXPECT_NE(vec.data(), nullptr);
   EXPECT_EQ(vec[0z], 1);
@@ -166,6 +169,7 @@ TEST(DataStructures, VectorSpan) {
   int buf[]{1, 2, 3};
   const auto vec = Vector<int>{std::span{buf}};
   EXPECT_EQ(vec.size(), 3);
+  EXPECT_FALSE(vec.empty());
   EXPECT_EQ(vec.capacity(), 3);
   EXPECT_NE(vec.data(), nullptr);
   EXPECT_EQ(vec[0z], 1);
@@ -173,6 +177,16 @@ TEST(DataStructures, VectorSpan) {
   EXPECT_EQ(vec[2z], 3);
   EXPECT_THROW(vec[3z], std::out_of_range);
   EXPECT_THROW(vec[static_cast<std::size_t>(-1)], std::out_of_range);
+}
+
+TEST(DataStructures, VectorWriteAccess) {
+  auto vec = Vector<int>{1, 2, 3};
+  vec[0] = 4;
+  vec[1] = 5;
+  vec[2] = 6;
+  EXPECT_EQ(vec[0], 4);
+  EXPECT_EQ(vec[1], 5);
+  EXPECT_EQ(vec[2], 6);
 }
 
 TEST(DataStructures, VectorReserve) {
@@ -184,6 +198,12 @@ TEST(DataStructures, VectorReserve) {
   EXPECT_EQ(vec[0z], 1);
   EXPECT_EQ(vec[1z], 2);
   EXPECT_EQ(vec[2z], 3);
+
+  const auto old_capacity = vec.capacity();
+  vec.reserve(3); // less than capacity
+  EXPECT_EQ(vec.capacity(), old_capacity);
+  vec.reserve(old_capacity); // equal to capacity
+  EXPECT_EQ(vec.capacity(), old_capacity);
 }
 
 TEST(DataStructures, VectorReserveCopyOnly) {
@@ -210,6 +230,29 @@ TEST(DataStructures, VectorReserveCopyOnly) {
   EXPECT_EQ(vec[0z], init[0z]);
   EXPECT_EQ(vec[1z], init[1z]);
   EXPECT_EQ(vec[2z], init[2z]);
+}
+
+TEST(DataStructures, VectorPushBack) {
+  auto vec = Vector<int>{};
+  EXPECT_TRUE(vec.empty());
+  
+  vec.push_back(1);
+  EXPECT_EQ(vec.size(), 1);
+  EXPECT_EQ(vec.capacity(), 1);
+  EXPECT_EQ(vec[0], 1);
+
+  vec.push_back(2);
+  EXPECT_EQ(vec.size(), 2);
+  EXPECT_EQ(vec.capacity(), 2);
+  EXPECT_EQ(vec[0], 1);
+  EXPECT_EQ(vec[1], 2);
+
+  vec.push_back(3);
+  EXPECT_EQ(vec.size(), 3);
+  EXPECT_EQ(vec.capacity(), 4);
+  EXPECT_EQ(vec[0], 1);
+  EXPECT_EQ(vec[1], 2);
+  EXPECT_EQ(vec[2], 3);
 }
 
 // TEST(DataStructures, VectorReserveMoveOnly) {
@@ -244,7 +287,11 @@ void FuzzTestVectorSpan(const std::vector<int>& init) {
   auto vec = Vector<int>{std::span{init.begin(), init.size()}};
   EXPECT_EQ(vec.size(), init.size());
   EXPECT_EQ(vec.capacity(), init.size());
-  EXPECT_NE(vec.data(), nullptr);
+  if (init.empty()) {
+    EXPECT_EQ(vec.data(), nullptr);
+  } else {
+    EXPECT_NE(vec.data(), nullptr);
+  }
   EXPECT_EQ(vec.view().size(), init.size());
 
   for (std::size_t i = 0; i < init.size(); ++i) {
