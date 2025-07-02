@@ -43,9 +43,10 @@ class Vector
     return m_size == 0;
   }
 
-  auto view() const
+  template <typename Self>
+  auto view(this Self&& self)
   {
-    return std::span<T>{m_data.get(), m_size};
+    return std::span{std::forward<Self>(self).data(), std::forward<Self>(self).size()};
   }
 
   void reserve(std::size_t newCapacity)
