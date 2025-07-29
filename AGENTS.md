@@ -13,6 +13,7 @@ This is a C++ project containing a collection of solutions to coding exercises f
 -   **Package Manager:** vcpkg
 -   **CI/CD:** GitHub Actions
 -   **Code Quality:** Clang-Format, Clang-Tidy
+-   **Environment:** devcontainer
 
 ## Project Structure
 
