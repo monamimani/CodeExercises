@@ -2,6 +2,7 @@
 #include "benchmark/benchmark.h"
 #include "gtest/gtest.h"
 #include <initializer_list>
+#include <stdexcept>
 #include <type_traits>
 
 import std;
@@ -42,6 +43,11 @@ class Vector
     return m_capacity;
   }
 
+  auto max_size() const
+  {
+    return std::numeric_limits<std::size_t>::max() / sizeof(T);
+  }
+
   auto empty() const
   {
     return m_size == 0;
@@ -55,14 +61,23 @@ class Vector
 
   void reserve(std::size_t newCapacity)
   {
-    if(newCapacity > m_capacity)
+    if(newCapacity <= m_capacity)
     {
+      return;
+    }
+
+    if(newCapacity > max_size())
+    {
+      throw std::length_error(std::format("Vector::reserve capacity would exceed max_size(): {}", max_size()));
+    }
+
       auto newData = std::make_unique<T[]>(newCapacity);
       copy_or_move(view(), std::span<T>{newData.get(), m_size});
       m_data = std::move(newData);
       m_capacity = newCapacity;
-    }
   }
+
+  // What other edge cases should I test for in my Vector implementation?
 
   void push_back(const T& value)
   {
@@ -327,11 +342,12 @@ TEST(DataStructures, VectorReserveMoveOnly) {
   EXPECT_EQ(vec[2z].m_val, 3);
 }
 
-TEST(DataStructures, VectorReserveThrowsAtMaxSize) __attribute__((no_sanitize_address)) {
+TEST(DataStructures, VectorReserveThrowsAtMaxSize) {
   auto vec = Vector<int>{};
-  // Attempt to allocate 1TB, which should trigger std::bad_alloc on most systems.
-  // This value is chosen to be large enough to fail, but not so large that ASan aborts immediately.
-  EXPECT_THROW(vec.reserve(1ULL << 40), std::bad_alloc);
+  // The vector should throw a std::length_error if the requested capacity
+  // exceeds max_size(), before it even attempts the allocation. This is a much
+  // more reliable test than trying to trigger a real out-of-memory error.
+  ASSERT_THROW({ vec.reserve(vec.max_size() + 1); }, std::length_error);
 }
 
 TEST(DataStructures, VectorWithEmptyInput) {
