@@ -12,7 +12,8 @@
     "vscode": {
       "settings": {
         "cmake.configureOnOpen": false,
-        "editor.formatOnSave": false
+        "editor.formatOnSave": false,
+        "geminicodeassist.updateChannel": "Insiders"
       },
       "extensions": [
         "github.vscode-github-actions",
@@ -25,9 +26,15 @@
         "google.geminicodeassist"
       ]
     },
-    "jetbrains" : {
-      "backend" : "CLion"
-    }
+    "jetbrains": {
+      "backend": "CLion",
+      "defaultProjectLocation": "/workspaces/CodeExercises",
+      "plugins": [
+        "com.github.copilot",
+        "com.intellij.clion.clangd",
+        "com.jetbrains.plugins.clangFormat"
+      ]
+     }
   },
   // "remoteUser": "vscode",
   "features": {},

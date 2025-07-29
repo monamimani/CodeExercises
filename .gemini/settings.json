@@ -3,5 +3,17 @@
     "GEMINI.MD",
     "AGENTS.MD"
   ],
-  "autoAccept": true
+  "autoAccept": true,
+    "mcpServers": {
+    "context7": {
+      "httpUrl": "https://mcp.context7.com/mcp"
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
+    }
+  }
 }
